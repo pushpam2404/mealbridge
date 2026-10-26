@@ -55,7 +55,6 @@ export const api = {
   register: (body) => request('POST', '/auth/register', body),
   login: (body) => request('POST', '/auth/login', body),
   me: () => request('GET', '/auth/me'),
-  updateMe: (body) => request('PATCH', '/auth/me', body),
 
   listings: (params) => request('GET', `/listings${qs(params)}`),
   cities: () => request('GET', '/listings/cities'),
