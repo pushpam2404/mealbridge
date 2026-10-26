@@ -1,0 +1,248 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+:root {
+  --paper: #f1f4ee;
+  --surface: #ffffff;
+  --surface-2: #e7ece3;
+  --ink: #14231c;
+  --ink-soft: #4a5a51;
+  --line: #d3dbd0;
+  --leaf: #1f6b45;
+  --leaf-hover: #185a39;
+  --on-leaf: #ffffff;
+  --lime: #d4f06b;
+  --on-lime: #14231c;
+  --tomato: #c23a22;
+  --tomato-soft: #fbe5df;
+  --amber: #8a5a0b;
+  --amber-soft: #f8ecd2;
+  --rail: #14231c;
+  --veg: #1d8a3a;
+  --nonveg: #8b3a1a;
+  --chart: #1a7f4b;
+  --shadow: 0 1px 2px rgb(20 35 28 / 0.06), 0 8px 24px -12px rgb(20 35 28 / 0.18);
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --paper: #0e1712;
+    --surface: #16221b;
+    --surface-2: #1d2b23;
+    --ink: #e6eee8;
+    --ink-soft: #a3b5aa;
+    --line: #2a3b31;
+    --leaf: #6fd39b;
+    --leaf-hover: #8be0b0;
+    --on-leaf: #0b1a12;
+    --lime: #d4f06b;
+    --on-lime: #14231c;
+    --tomato: #ff8a6e;
+    --tomato-soft: #3a1d16;
+    --amber: #f2c46d;
+    --amber-soft: #352914;
+    --rail: #070d0a;
+    --veg: #4cc36b;
+    --nonveg: #e0794d;
+    --chart: #3aa86b;
+    --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 10px 30px -12px rgb(0 0 0 / 0.6);
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme='dark'] {
+  --paper: #0e1712;
+  --surface: #16221b;
+  --surface-2: #1d2b23;
+  --ink: #e6eee8;
+  --ink-soft: #a3b5aa;
+  --line: #2a3b31;
+  --leaf: #6fd39b;
+  --leaf-hover: #8be0b0;
+  --on-leaf: #0b1a12;
+  --lime: #d4f06b;
+  --on-lime: #14231c;
+  --tomato: #ff8a6e;
+  --tomato-soft: #3a1d16;
+  --amber: #f2c46d;
+  --amber-soft: #352914;
+  --rail: #070d0a;
+  --veg: #4cc36b;
+  --nonveg: #e0794d;
+  --chart: #3aa86b;
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 10px 30px -12px rgb(0 0 0 / 0.6);
+  color-scheme: dark;
+}
+
+@theme inline {
+  --font-sans: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif;
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-line: var(--line);
+  --color-leaf: var(--leaf);
+  --color-leaf-hover: var(--leaf-hover);
+  --color-on-leaf: var(--on-leaf);
+  --color-lime: var(--lime);
+  --color-on-lime: var(--on-lime);
+  --color-tomato: var(--tomato);
+  --color-tomato-soft: var(--tomato-soft);
+  --color-amber: var(--amber);
+  --color-amber-soft: var(--amber-soft);
+  --color-rail: var(--rail);
+  --color-veg: var(--veg);
+  --color-nonveg: var(--nonveg);
+  --color-chart: var(--chart);
+  --shadow-ticket: var(--shadow);
+}
+
+@layer base {
+  html {
+    background: var(--paper);
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    min-height: 100dvh;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.55;
+    font-optical-sizing: auto;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  h1,
+  h2,
+  h3 {
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  :focus-visible {
+    outline: 3px solid var(--leaf);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  button,
+  [role='button'],
+  a,
+  summary,
+  label[for],
+  select {
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+  button:disabled {
+    cursor: not-allowed;
+  }
+  input,
+  select,
+  textarea {
+    font: inherit;
+  }
+  ::selection {
+    background: var(--lime);
+    color: var(--on-lime);
+  }
+}
+
+@layer components {
+  .num {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .display {
+    font-variation-settings: 'wdth' 78;
+    font-weight: 700;
+  }
+
+  /* Pickup ticket: a card with a perforated tear line and side notches. */
+  .ticket {
+    --notch: 11px;
+    position: relative;
+    background: var(--surface);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    isolation: isolate;
+  }
+  .ticket-tear {
+    position: relative;
+    height: 0;
+    margin: 0 18px;
+    border-top: 2px dashed var(--line);
+  }
+  .ticket-tear::before,
+  .ticket-tear::after {
+    content: '';
+    position: absolute;
+    top: calc(var(--notch) * -1 - 1px);
+    width: calc(var(--notch) * 2);
+    height: calc(var(--notch) * 2);
+    border-radius: 50%;
+    background: var(--ticket-bg, var(--paper));
+  }
+  .ticket-tear::before {
+    left: calc(-18px - var(--notch));
+  }
+  .ticket-tear::after {
+    right: calc(-18px - var(--notch));
+  }
+
+  .field {
+    width: 100%;
+    min-height: 46px;
+    border-radius: 8px;
+    border: 1.5px solid var(--line);
+    background: var(--surface);
+    padding: 0.6rem 0.8rem;
+    color: var(--ink);
+    transition: border-color 150ms ease, box-shadow 150ms ease;
+  }
+  .field::placeholder {
+    color: color-mix(in oklab, var(--ink-soft) 80%, transparent);
+  }
+  .field:hover {
+    border-color: color-mix(in oklab, var(--ink-soft) 55%, var(--line));
+  }
+  .field:focus {
+    outline: none;
+    border-color: var(--leaf);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--leaf) 25%, transparent);
+  }
+  .field[aria-invalid='true'] {
+    border-color: var(--tomato);
+  }
+
+  .skeleton {
+    background: linear-gradient(90deg, var(--surface-2) 25%, color-mix(in oklab, var(--surface-2) 60%, var(--surface)) 50%, var(--surface-2) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s linear infinite;
+    border-radius: 6px;
+  }
+}
+
+@keyframes shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+  }
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
