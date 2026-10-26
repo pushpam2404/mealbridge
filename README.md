@@ -10,8 +10,6 @@ MealBridge connects restaurants, hostel messes, caterers and bakeries that have 
 | Source | https://github.com/pushpam2404/mealbridge |
 | Course | Web Application Framework |
 | Student | Pushpam Raj Satyarthi |
-| Roll number | 2024107717 |
-| Branch | CSE-Core |
 
 To try it without signing up, open the app, go to Sign in, and use "Try as a kitchen" or "Try as an NGO". Both demo accounts use the password `demo1234`.
 
