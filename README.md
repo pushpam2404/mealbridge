@@ -76,7 +76,7 @@ flowchart LR
 - One Vercel project serves both halves. `vercel.json` rewrites `/api/*` to the Express function and everything else to the SPA's `index.html`.
 - The Mongoose connection is cached on `globalThis`, so warm serverless invocations reuse it instead of reconnecting.
 - The function runs in Vercel's Mumbai region (`bom1`), next to the Atlas cluster in AWS `ap-south-1`.
-- Locally, `server/server.js` runs the same Express app on port 5050, and Vite proxies `/api` to it. If 5050 is taken, set `PORT` and the proxy follows it.
+- Locally, `server/server.js` runs the same Express app on port 5050, and Vite proxies `/api` to it. If 5050 is taken, start the dev servers with `PORT` exported in the shell, for example `PORT=5051 npm run dev:memory`, and the proxy follows it.
 
 ```
 mealbridge/
@@ -218,7 +218,7 @@ Other scripts:
 | `JWT_SECRET` | yes | Secret for signing login tokens. Use a long random string, for example `openssl rand -base64 48` |
 | `DEMO_MODE` | no | `true` re-posts the demo kitchens' listings with fresh pickup times once they expire or are collected, so the public demo never shows an empty board (checked at most every 5 minutes) |
 | `CORS_ORIGIN` | no | Comma-separated allowed origins. Defaults to any origin, which is fine here because the frontend is same-origin and auth uses a bearer token, not cookies |
-| `PORT` | no | Local API port (default 5050). The Vite dev proxy reads the same variable |
+| `PORT` | no | Local API port (default 5050). The Vite dev proxy only sees it when it is exported in the shell, not when it is set in `.env` |
 
 ## Deployment (Vercel + MongoDB Atlas, both free)
 
