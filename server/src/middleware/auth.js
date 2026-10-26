@@ -9,7 +9,7 @@ const secret = () => {
 };
 
 export const signToken = (user) =>
-  jwt.sign({ sub: user.id, role: user.role }, secret(), { expiresIn: '7d' });
+  jwt.sign({ sub: user.id, role: user.role }, secret(), { algorithm: 'HS256', expiresIn: '7d' });
 
 export async function requireAuth(req, _res, next) {
   const header = req.get('authorization') ?? '';
@@ -18,7 +18,7 @@ export async function requireAuth(req, _res, next) {
 
   let payload;
   try {
-    payload = jwt.verify(token, secret());
+    payload = jwt.verify(token, secret(), { algorithms: ['HS256'] });
   } catch {
     throw new HttpError(401, 'Your session has expired. Sign in again.');
   }

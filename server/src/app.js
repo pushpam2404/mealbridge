@@ -13,7 +13,7 @@ export function createApp({ connect = connectDB } = {}) {
   app.disable('x-powered-by');
 
   app.use(helmet());
-  app.use(cors({ origin: process.env.CORS_ORIGIN?.split(',') ?? true }));
+  app.use(cors({ origin: process.env.CORS_ORIGIN?.split(',').map((o) => o.trim()) ?? true }));
   app.use(express.json({ limit: '100kb' }));
 
   app.get('/api/health', async (_req, res) => {

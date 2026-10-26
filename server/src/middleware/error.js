@@ -13,6 +13,8 @@ export function errorHandler(err, _req, res, _next) {
     err = new HttpError(409, 'An account with this email already exists', { email: 'Already registered' });
   } else if (err?.type === 'entity.parse.failed') {
     err = new HttpError(400, 'Request body is not valid JSON');
+  } else if (err?.type === 'entity.too.large') {
+    err = new HttpError(413, 'Request body is too large');
   }
 
   const status = err instanceof HttpError ? err.status : 500;

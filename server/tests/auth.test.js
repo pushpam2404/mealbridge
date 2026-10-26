@@ -1,4 +1,5 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import jwt from 'jsonwebtoken';
 import { api, clearDB, registerUser, startDB, stopDB } from './helpers.js';
 
 beforeAll(startDB);
@@ -50,5 +51,41 @@ describe('auth', () => {
     const { auth } = await registerUser('donor');
     const res = await api().patch('/api/auth/me').set(auth).send({ organization: 'Hotel Sunrise' });
     expect(res.body.user.organization).toBe('Hotel Sunrise');
+  });
+
+  it('keeps profile fields the update does not mention', async () => {
+    const { auth } = await registerUser('donor', { organization: 'Hotel Sunrise', phone: '+91 90000 00000' });
+    const res = await api().patch('/api/auth/me').set(auth).send({ city: 'Mumbai' });
+    expect(res.body.user).toMatchObject({ city: 'Mumbai', organization: 'Hotel Sunrise', phone: '+91 90000 00000' });
+  });
+
+  it('treats operator objects in login fields as invalid input, not as queries', async () => {
+    await registerUser('donor', { email: 'real@test.dev' });
+    const res = await api().post('/api/auth/login').send({ email: { $ne: null }, password: { $ne: null } });
+    expect(res.status).toBe(400);
+  });
+
+  it('rejects tokens that are unsigned, signed with another key or expired', async () => {
+    const { user } = await registerUser('donor');
+    const forged = [
+      jwt.sign({ sub: user._id }, 'not-the-secret'),
+      jwt.sign({ sub: user._id }, 'test-secret', { expiresIn: -10 }),
+      `${Buffer.from('{"alg":"none","typ":"JWT"}').toString('base64url')}.${Buffer.from(JSON.stringify({ sub: user._id })).toString('base64url')}.`,
+    ];
+    for (const token of forged) {
+      const res = await api().get('/api/auth/me').set({ Authorization: `Bearer ${token}` });
+      expect(res.status).toBe(401);
+    }
+  });
+
+  it('refuses fields a profile update should not touch', async () => {
+    const { auth } = await registerUser('donor');
+    const res = await api().patch('/api/auth/me').set(auth).send({ role: 'receiver', email: 'x@test.dev' });
+    expect(res.status).toBe(400);
+  });
+
+  it('answers 413 to oversized bodies instead of a server error', async () => {
+    const res = await api().post('/api/auth/login').send({ email: 'a@test.dev', password: 'x'.repeat(200_000) });
+    expect(res.status).toBe(413);
   });
 });

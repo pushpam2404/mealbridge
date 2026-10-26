@@ -17,22 +17,29 @@ const authLimiter = rateLimit({
   message: { error: 'Too many attempts. Wait a few minutes and try again.' },
 });
 
-const registerSchema = z.object({
+const profileFields = {
   name: z.string().trim().min(2, 'Enter your name (at least 2 characters)').max(80),
+  organization: z.string().trim().max(120),
+  phone: z.string().trim().max(20),
+  city: z.string().trim().max(60),
+};
+
+const registerSchema = z.object({
+  name: profileFields.name,
   email: z.email('Enter a valid email address').trim().toLowerCase(),
   password: z.string().min(8, 'Use at least 8 characters').max(72),
   role: z.enum(ROLES, { error: 'Choose whether you donate or receive food' }),
-  organization: z.string().trim().max(120).optional().default(''),
-  phone: z.string().trim().max(20).optional().default(''),
-  city: z.string().trim().max(60).optional().default(''),
+  organization: profileFields.organization.optional().default(''),
+  phone: profileFields.phone.optional().default(''),
+  city: profileFields.city.optional().default(''),
 });
 
 const loginSchema = z.object({
   email: z.email('Enter a valid email address').trim().toLowerCase(),
-  password: z.string().min(1, 'Enter your password'),
+  password: z.string().min(1, 'Enter your password').max(200),
 });
 
-const profileSchema = registerSchema.pick({ name: true, organization: true, phone: true, city: true }).partial();
+const profileSchema = z.object(profileFields).partial().strict('Some of these fields cannot be edited');
 
 const session = (user) => ({ token: signToken(user), user: user.toJSON() });
 

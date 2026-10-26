@@ -95,6 +95,17 @@ describe('listing CRUD', () => {
     expect((await api().patch(`/api/listings/${id}`).set(donor.auth).send({ status: 'completed' })).status).toBe(400);
   });
 
+  it('keeps untouched fields when a partial update only sends one', async () => {
+    const { body } = await create();
+    const res = await api().patch(`/api/listings/${body.listing._id}`).set(donor.auth).send({ title: 'Renamed' });
+    expect(res.status).toBe(200);
+    expect(res.body.listing).toMatchObject({
+      title: 'Renamed',
+      description: listingInput().description,
+      allergens: ['nuts'],
+    });
+  });
+
   it('lets only the owner delete', async () => {
     const { body } = await create();
     const id = body.listing._id;

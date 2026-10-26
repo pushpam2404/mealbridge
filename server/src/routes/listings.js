@@ -11,21 +11,26 @@ const router = Router();
 const DONOR_FIELDS = 'name organization city';
 const CONTACT_FIELDS = 'name organization city phone email';
 
-const listingFields = z.object({
+// Fields without defaults, so a partial PATCH never resets what it does not mention.
+const listingBase = z.object({
   title: z.string().trim().min(3, 'Give it a short title (at least 3 characters)').max(100),
-  description: z.string().trim().max(1000).optional().default(''),
+  description: z.string().trim().max(1000),
   category: z.enum(CATEGORIES, { error: 'Pick a category' }),
   foodType: z.enum(FOOD_TYPES, { error: 'Pick veg, non-veg or vegan' }),
   quantity: z.coerce.number({ error: 'Enter a quantity' }).positive('Quantity must be more than 0').max(100000),
   unit: z.enum(UNITS, { error: 'Pick a unit' }),
   estServings: z.coerce.number({ error: 'Estimate how many people this feeds' }).int('Use a whole number').min(1, 'Must feed at least 1 person').max(100000),
-  allergens: z.array(z.string().trim().min(1).max(30)).max(10).optional().default([]),
-  imageUrl: z.union([z.url('Enter a full image URL starting with https://'), z.literal('')]).optional().default(''),
+  allergens: z.array(z.string().trim().min(1).max(30)).max(10),
   pickupAddress: z.string().trim().min(5, 'Enter the pickup address').max(200),
   city: z.string().trim().min(2, 'Enter the city').max(60),
   pickupStart: z.coerce.date({ error: 'Enter when pickup can start' }),
   pickupEnd: z.coerce.date({ error: 'Enter when pickup must end' }),
   expiresAt: z.coerce.date({ error: 'Enter when the food stops being safe to eat' }),
+});
+
+const listingFields = listingBase.extend({
+  description: listingBase.shape.description.optional().default(''),
+  allergens: listingBase.shape.allergens.optional().default([]),
 });
 
 const timingRules = (data, ctx) => {
@@ -41,7 +46,7 @@ const timingRules = (data, ctx) => {
 };
 
 const listingSchema = listingFields.superRefine(timingRules);
-const listingPatch = listingFields.partial().strict('Some of these fields cannot be edited');
+const listingPatch = listingBase.partial().strict('Some of these fields cannot be edited');
 
 const querySchema = z.object({
   q: z.string().trim().max(100).optional(),

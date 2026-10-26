@@ -16,7 +16,6 @@ const listingSchema = new mongoose.Schema(
     unit: { type: String, enum: UNITS, required: true },
     estServings: { type: Number, required: true, min: 1 },
     allergens: { type: [String], default: [] },
-    imageUrl: { type: String, trim: true, default: '' },
     pickupAddress: { type: String, required: true, trim: true, maxlength: 200 },
     city: { type: String, required: true, trim: true, maxlength: 60 },
     pickupStart: { type: Date, required: true },
