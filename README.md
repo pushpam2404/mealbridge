@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| **Live app** | __LIVE_URL__ |
+| **Live app** | https://mealbridge-app.vercel.app |
 | **Source** | https://github.com/pushpam2404/mealbridge |
 | **Course** | Web Application Framework |
 | **Student** | Pushpam Raj Satyarthi |
@@ -63,7 +63,7 @@ Listings automatically come off the board once their best-before time passes.
 | Frontend | **React 19**, React Router 8, Vite 8, **Tailwind CSS 4**, Motion (motion.dev), Recharts, lucide-react icons, Sonner toasts |
 | Backend | **Node.js** + **Express 5** (REST API), Zod validation, JWT auth (jsonwebtoken), bcryptjs, Helmet, CORS, express-rate-limit |
 | Database | **MongoDB Atlas** via **Mongoose 9** |
-| Testing | Vitest + Supertest + mongodb-memory-server (21 API tests) |
+| Testing | Vitest + Supertest + mongodb-memory-server (23 API tests) |
 | Hosting | **Vercel**: static React build plus Express running as a serverless function |
 
 ## Architecture
@@ -86,6 +86,7 @@ flowchart LR
 
 - One Vercel project serves both halves. `vercel.json` rewrites `/api/*` to the Express function and everything else to the SPA's `index.html`.
 - The Mongoose connection is cached on `globalThis`, so warm serverless invocations reuse it instead of reconnecting.
+- The function runs in Vercel's Mumbai region (`bom1`), next to the Atlas cluster in AWS `ap-south-1`.
 - Locally, `server/server.js` runs the same Express app on port 5050, and Vite proxies `/api` to it.
 
 ```
@@ -171,12 +172,12 @@ Example:
 
 ```bash
 # Log in as the demo kitchen
-TOKEN=$(curl -s -X POST __LIVE_URL__/api/auth/login \
+TOKEN=$(curl -s -X POST https://mealbridge-app.vercel.app/api/auth/login \
   -H 'Content-Type: application/json' \
   -d '{"email":"donor@mealbridge.app","password":"demo1234"}' | jq -r .token)
 
 # Post surplus food
-curl -X POST __LIVE_URL__/api/listings \
+curl -X POST https://mealbridge-app.vercel.app/api/listings \
   -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' \
   -d '{"title":"Veg pulao","category":"cooked","foodType":"veg","quantity":6,"unit":"kg",
        "estServings":20,"pickupAddress":"Shop 4, Koregaon Park","city":"Pune",
@@ -224,6 +225,7 @@ Other scripts:
 |---|---|---|
 | `MONGODB_URI` | yes | MongoDB connection string |
 | `JWT_SECRET` | yes | Secret for signing login tokens |
+| `DEMO_MODE` | no | `true` re-posts the demo kitchens' listings with fresh pickup times once they expire or are collected, so the public demo never shows an empty board (checked at most every 5 minutes) |
 | `CORS_ORIGIN` | no | Comma-separated allowed origins (defaults to any, since the frontend is same-origin) |
 | `PORT` | no | Local API port (default 5050) |
 
@@ -231,7 +233,7 @@ Other scripts:
 
 1. Create a free **M0** cluster on [MongoDB Atlas](https://www.mongodb.com/cloud/atlas). Add a database user, allow network access from `0.0.0.0/0` (Vercel's IPs are dynamic), and copy the connection string.
 2. Import the GitHub repo into Vercel. `vercel.json` already sets the build command, output directory and rewrites.
-3. Add `MONGODB_URI` and `JWT_SECRET` under *Project, Settings, Environment Variables*.
+3. Add `MONGODB_URI`, `JWT_SECRET` and (for a public demo) `DEMO_MODE=true` under *Project, Settings, Environment Variables*. `vercel.json` pins the function to `bom1` (Mumbai) so it sits next to an Atlas cluster in `ap-south-1`.
 4. Deploy, then seed once from your machine: `vercel env pull .env && npm run seed`.
 
 Every push to `main` redeploys automatically.
@@ -242,7 +244,7 @@ Every push to `main` redeploys automatically.
 npm test
 ```
 
-21 integration tests cover registration and login, validation errors, duplicate emails, ownership rules on update and delete, the claim → complete lifecycle, concurrent claims (only one wins), releasing claims, lazy expiry of stale listings, private contact details, and impact statistics.
+23 integration tests cover registration and login, validation errors, duplicate emails, ownership rules on update and delete, the claim → complete lifecycle, concurrent claims (only one wins), releasing claims, lazy expiry of stale listings, private contact details, impact statistics, and demo mode.
 
 ## Screenshots
 
