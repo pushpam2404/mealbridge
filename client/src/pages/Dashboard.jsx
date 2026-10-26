@@ -169,6 +169,17 @@ export default function Dashboard() {
   const now = useNow();
   const tabs = TABS[user.role];
   const [tab, setTab] = useState(tabs[0].key);
+
+  // Arrow keys move between tabs, as the tab pattern expects.
+  const onTabKey = (e) => {
+    const i = tabs.findIndex((t) => t.key === tab);
+    const next = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: tabs.length - 1 }[e.key];
+    if (next === undefined) return;
+    e.preventDefault();
+    const target = tabs[(next + tabs.length) % tabs.length];
+    setTab(target.key);
+    document.getElementById(`tab-${target.key}`)?.focus();
+  };
   const [pending, setPending] = useState(null);
   const [busy, setBusy] = useState(false);
   const { data, loading, error, reload, setData } = useAsync(() => api.myListings(), []);
@@ -223,7 +234,7 @@ export default function Dashboard() {
 
       <ImpactLedger role={user.role} />
 
-      <div className="mt-12 flex gap-1 overflow-x-auto border-b border-line" role="tablist" aria-label={isDonor ? 'Your listings' : 'Your pickups'}>
+      <div className="mt-12 flex border-b border-line sm:gap-1" role="tablist" aria-label={isDonor ? 'Your listings' : 'Your pickups'} onKeyDown={onTabKey}>
         {tabs.map((t) => (
           <button
             key={t.key}
@@ -231,9 +242,10 @@ export default function Dashboard() {
             id={`tab-${t.key}`}
             aria-selected={tab === t.key}
             aria-controls="tab-panel"
+            tabIndex={tab === t.key ? 0 : -1}
             onClick={() => setTab(t.key)}
             className={clsx(
-              'relative flex h-12 items-center gap-2 px-4 font-semibold whitespace-nowrap transition-colors',
+              'relative flex min-h-12 flex-1 items-center justify-center gap-1.5 px-1.5 py-2 text-center text-sm leading-tight font-semibold transition-colors sm:flex-none sm:gap-2 sm:px-4 sm:text-base sm:whitespace-nowrap',
               tab === t.key ? 'text-ink' : 'text-ink-soft hover:text-ink',
             )}
           >

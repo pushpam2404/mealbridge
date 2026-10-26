@@ -72,7 +72,7 @@ function PickupBoard() {
                 className="absolute -top-3 left-1/2 z-10 h-5 w-10 -translate-x-1/2 rounded-sm bg-gradient-to-b from-zinc-300 to-zinc-500 shadow-md"
                 aria-hidden
               />
-              <Ticket listing={listing} now={now} />
+              <Ticket listing={listing} now={now} headingLevel="h2" />
             </motion.div>
           ))}
       </div>
