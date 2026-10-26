@@ -2,7 +2,7 @@ import { Router } from 'express';
 import rateLimit from 'express-rate-limit';
 import { z } from 'zod';
 import { User, ROLES } from '../models/User.js';
-import { requireAuth, signToken } from '../middleware/auth.js';
+import { clearSessionCookie, requireAuth, setSessionCookie, signToken } from '../middleware/auth.js';
 import { validate } from '../middleware/validate.js';
 import { HttpError } from '../utils/httpError.js';
 
@@ -41,12 +41,16 @@ const loginSchema = z.object({
 
 const profileSchema = z.object(profileFields).partial().strict('Some of these fields cannot be edited');
 
-const session = (user) => ({ token: signToken(user), user: user.toJSON() });
+const session = (user, req, res) => {
+  const token = signToken(user);
+  setSessionCookie(req, res, token);
+  return { token, user: user.toJSON() };
+};
 
 router.post('/register', authLimiter, validate(registerSchema), async (req, res) => {
   const { password, ...fields } = req.body;
   const user = await User.create({ ...fields, passwordHash: await User.hashPassword(password) });
-  res.status(201).json(session(user));
+  res.status(201).json(session(user, req, res));
 });
 
 router.post('/login', authLimiter, validate(loginSchema), async (req, res) => {
@@ -54,7 +58,12 @@ router.post('/login', authLimiter, validate(loginSchema), async (req, res) => {
   if (!user || !(await user.checkPassword(req.body.password))) {
     throw new HttpError(401, 'Email or password is incorrect');
   }
-  res.json(session(user));
+  res.json(session(user, req, res));
+});
+
+router.post('/logout', (req, res) => {
+  clearSessionCookie(req, res);
+  res.status(204).end();
 });
 
 router.get('/me', requireAuth, (req, res) => {

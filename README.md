@@ -133,13 +133,14 @@ Indexes on `{status, city, expiresAt}`, `donor`, `claimedBy`, plus a text index.
 
 ## REST API
 
-Base URL: `/api`. Request and response bodies are JSON. Protected routes need `Authorization: Bearer <token>`. Errors always look like `{ "error": "message", "fields": { "field": "problem" } }`.
+Base URL: `/api`. Request and response bodies are JSON. Protected routes accept either the `mb_session` cookie the app uses (set on login and register) or `Authorization: Bearer <token>`, which is handy for curl and scripts. Errors always look like `{ "error": "message", "fields": { "field": "problem" } }`.
 
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
 | GET | `/health` | none | Liveness check and database status |
 | POST | `/auth/register` | none | Create an account. Returns `{ token, user }` |
 | POST | `/auth/login` | none | Log in. Returns `{ token, user }` |
+| POST | `/auth/logout` | none | Clears the session cookie |
 | GET | `/auth/me` | any | Current user |
 | PATCH | `/auth/me` | any | Update name, organisation, phone, city |
 | GET | `/listings` | none | List listings. Query: `q`, `status` (default `available`, or `all`), `category`, `foodType`, `city`, `sort` (`expiring` / `newest` / `largest`), `page`, `limit` |
@@ -233,21 +234,21 @@ Every push to `main` redeploys automatically.
 npm test
 ```
 
-There are 40 tests. The API tests run the real Express app against an in-memory MongoDB and cover registration and login, validation errors, duplicate emails, ownership rules, the claim, complete and release lifecycle, two simultaneous claims (only one wins), lazy expiry of stale listings, private contact details, partial updates that must not wipe other fields, forged and expired tokens, operator objects in login bodies, oversized bodies, impact statistics and demo mode. Smaller unit tests cover the impact maths and the client's date and freshness formatting. One test checks that the inline theme script in `client/index.html` still matches the hash allowed by the Content-Security-Policy in `vercel.json`.
+There are 43 tests. The API tests run the real Express app against an in-memory MongoDB and cover registration and login, validation errors, duplicate emails, ownership rules, the claim, complete and release lifecycle, two simultaneous claims (only one wins), lazy expiry of stale listings, private contact details, partial updates that must not wipe other fields, forged and expired tokens, the cookie session (httpOnly flag, cross-site writes refused, logout), operator objects in login bodies, oversized bodies, impact statistics and demo mode. Smaller unit tests cover the impact maths and the client's date and freshness formatting. One test checks that the inline theme script in `client/index.html` still matches the hash allowed by the Content-Security-Policy in `vercel.json`.
 
 GitHub Actions runs lint, the tests and the production build on every push and pull request (`.github/workflows/ci.yml`).
 
 ## Security notes
 
 - Request bodies and query strings go through Zod schemas before they reach Mongoose, so objects like `{"$ne": null}` are rejected rather than treated as queries. Search text is regex-escaped.
-- Passwords are hashed with bcrypt. Tokens are HS256 JWTs that expire after 7 days, and the algorithm is pinned when verifying.
+- Passwords are hashed with bcrypt. Tokens are HS256 JWTs that expire after 7 days, and the algorithm is pinned when verifying. The browser app keeps the token in an httpOnly, SameSite=Lax cookie, so page scripts cannot read it. A write that is authenticated by the cookie must be same-origin (`Sec-Fetch-Site`, or `Origin` as a fallback), which is the CSRF check. Bearer requests are not affected, since a cross-site page cannot attach that header on its own.
 - The auth routes are rate limited (50 requests per 15 minutes per IP). The limiter is in memory, so on Vercel each warm function instance counts separately.
 - The API sends Helmet's headers. The static site gets a Content-Security-Policy and other headers from `vercel.json`.
 - Phone and email are only returned to the donor and the receiver who claimed that listing.
 
 ## Limitations
 
-- Tokens live in `localStorage`, so an XSS bug would expose them. The CSP and React's escaping reduce that risk, but an httpOnly cookie would be safer.
+- A token still comes back in the login response body (for API clients), and stays valid for 7 days. There is no server-side revocation, so signing out only clears the cookie.
 - There is no email verification or password reset, and nothing checks that a donor or NGO is who they say they are. Anyone can register as either.
 - Location is a free-text city, not coordinates, so there is no "near me" search.
 - Listings have no photos.
@@ -259,7 +260,7 @@ GitHub Actions runs lint, the tests and the production build on every push and p
 
 - Geocode addresses and sort by distance.
 - Email or WhatsApp notification when a listing is claimed or about to expire.
-- Move the session to an httpOnly cookie with CSRF protection.
+- Server-side session revocation.
 - Photo upload for listings.
 - A shared rate-limit store for the serverless deployment.
 

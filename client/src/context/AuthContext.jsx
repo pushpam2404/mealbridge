@@ -1,23 +1,23 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { api, tokenStore } from '../lib/api';
+import { api, sessionHint } from '../lib/api';
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [ready, setReady] = useState(() => !tokenStore.get());
+  const [ready, setReady] = useState(() => !sessionHint.get());
 
   useEffect(() => {
-    if (!tokenStore.get()) return;
+    if (!sessionHint.get()) return;
     api
       .me()
       .then(({ user }) => setUser(user))
-      .catch(() => tokenStore.set(null))
+      .catch(() => sessionHint.set(false))
       .finally(() => setReady(true));
   }, []);
 
-  const startSession = useCallback(({ token, user }) => {
-    tokenStore.set(token);
+  const startSession = useCallback(({ user }) => {
+    sessionHint.set(true);
     setUser(user);
     return user;
   }, []);
@@ -29,7 +29,8 @@ export function AuthProvider({ children }) {
       login: async (credentials) => startSession(await api.login(credentials)),
       register: async (details) => startSession(await api.register(details)),
       logout: () => {
-        tokenStore.set(null);
+        sessionHint.set(false);
+        api.logout().catch(() => {});
         setUser(null);
       },
       setUser,

@@ -88,4 +88,34 @@ describe('auth', () => {
     const res = await api().post('/api/auth/login').send({ email: 'a@test.dev', password: 'x'.repeat(200_000) });
     expect(res.status).toBe(413);
   });
+
+  describe('cookie session', () => {
+    const cookieFor = async () => {
+      const { user } = await registerUser('donor', { email: 'cookie@test.dev' });
+      const res = await api().post('/api/auth/login').send({ email: user.email, password: 'password123' });
+      return { res, cookie: res.headers['set-cookie'].find((c) => c.startsWith('mb_session=')) };
+    };
+
+    it('sets an httpOnly SameSite cookie on login that authenticates later requests', async () => {
+      const { cookie } = await cookieFor();
+      expect(cookie).toMatch(/HttpOnly/i);
+      expect(cookie).toMatch(/SameSite=Lax/i);
+      const me = await api().get('/api/auth/me').set('Cookie', cookie.split(';')[0]);
+      expect(me.status).toBe(200);
+    });
+
+    it('refuses cookie-authenticated writes that come from another site', async () => {
+      const { cookie } = await cookieFor();
+      const send = (site) =>
+        api().patch('/api/auth/me').set('Cookie', cookie.split(';')[0]).set('Sec-Fetch-Site', site).send({ city: 'Pune' });
+      expect((await send('cross-site')).status).toBe(403);
+      expect((await send('same-origin')).status).toBe(200);
+    });
+
+    it('logs out by clearing the cookie', async () => {
+      const res = await api().post('/api/auth/logout');
+      expect(res.status).toBe(204);
+      expect(res.headers['set-cookie'].join()).toMatch(/mb_session=;/);
+    });
+  });
 });

@@ -1,19 +1,22 @@
-const TOKEN_KEY = 'mb-token';
+// The session itself is an httpOnly cookie the page cannot read. This flag only says that a
+// session probably exists, so signed-out visitors do not make a pointless /auth/me call.
+const HINT_KEY = 'mb-signed-in';
 
-export const tokenStore = {
+export const sessionHint = {
   get() {
     try {
-      return localStorage.getItem(TOKEN_KEY);
+      return localStorage.getItem(HINT_KEY) === '1';
     } catch {
-      return null;
+      return false;
     }
   },
-  set(token) {
+  set(on) {
     try {
-      if (token) localStorage.setItem(TOKEN_KEY, token);
-      else localStorage.removeItem(TOKEN_KEY);
+      if (on) localStorage.setItem(HINT_KEY, '1');
+      else localStorage.removeItem(HINT_KEY);
+      localStorage.removeItem('mb-token'); // older versions kept the token here
     } catch {
-      /* storage unavailable: the session lasts for this tab only */
+      /* storage unavailable: the cookie still works for this tab */
     }
   },
 };
@@ -28,13 +31,11 @@ export class ApiError extends Error {
 
 async function request(method, path, body) {
   const headers = { Accept: 'application/json' };
-  const token = tokenStore.get();
-  if (token) headers.Authorization = `Bearer ${token}`;
   if (body !== undefined) headers['Content-Type'] = 'application/json';
 
   let res;
   try {
-    res = await fetch(`/api${path}`, { method, headers, body: body === undefined ? undefined : JSON.stringify(body) });
+    res = await fetch(`/api${path}`, { method, headers, credentials: 'same-origin', body: body === undefined ? undefined : JSON.stringify(body) });
   } catch {
     throw new ApiError(0, 'Could not reach MealBridge. Check your connection and try again.');
   }
@@ -54,6 +55,7 @@ const qs = (params = {}) => {
 export const api = {
   register: (body) => request('POST', '/auth/register', body),
   login: (body) => request('POST', '/auth/login', body),
+  logout: () => request('POST', '/auth/logout'),
   me: () => request('GET', '/auth/me'),
 
   listings: (params) => request('GET', `/listings${qs(params)}`),
