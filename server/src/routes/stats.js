@@ -3,6 +3,7 @@ import { Listing } from '../models/Listing.js';
 import { User } from '../models/User.js';
 import { requireAuth } from '../middleware/auth.js';
 import { KG_PER_SERVING, summarize } from '../utils/impact.js';
+import { ensureDemoListings } from '../demo.js';
 
 const router = Router();
 
@@ -23,6 +24,7 @@ async function impactFor(match) {
 
 router.get('/', async (_req, res) => {
   await Listing.expireStale();
+  await ensureDemoListings();
   const rescued = { status: 'completed' };
   const twelveWeeksAgo = new Date(Date.now() - 12 * 7 * 24 * 3600 * 1000);
 

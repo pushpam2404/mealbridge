@@ -4,6 +4,7 @@ import { Listing, CATEGORIES, FOOD_TYPES, UNITS, STATUSES } from '../models/List
 import { optionalAuth, requireAuth, requireRole } from '../middleware/auth.js';
 import { validate } from '../middleware/validate.js';
 import { HttpError, notFound } from '../utils/httpError.js';
+import { ensureDemoListings } from '../demo.js';
 
 const router = Router();
 
@@ -73,6 +74,7 @@ const isClaimer = (listing, user) => user && listing.claimedBy?.equals(user._id)
 // READ (collection) with filtering, search, sorting and pagination
 router.get('/', validate(querySchema, 'query'), async (req, res) => {
   await Listing.expireStale();
+  await ensureDemoListings();
   const { q, status, category, foodType, city, sort, page, limit } = req.validQuery;
 
   const filter = {};
