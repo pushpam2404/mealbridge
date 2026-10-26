@@ -1,17 +1,19 @@
 # MealBridge
 
-**Rescue surplus food before it spoils.** MealBridge connects restaurants, hostel messes, caterers and bakeries that have leftover food with NGOs, shelters and volunteers nearby who can collect it and feed people.
+[![CI](https://github.com/pushpam2404/mealbridge/actions/workflows/ci.yml/badge.svg)](https://github.com/pushpam2404/mealbridge/actions/workflows/ci.yml)
+
+MealBridge connects restaurants, hostel messes, caterers and bakeries that have leftover food with NGOs, shelters and volunteers nearby who can collect it. It is a MERN app (MongoDB, Express, React, Node) built for the Web Application Framework course.
 
 | | |
 |---|---|
-| **Live app** | https://mealbridge-app.vercel.app |
-| **Source** | https://github.com/pushpam2404/mealbridge |
-| **Course** | Web Application Framework |
-| **Student** | Pushpam Raj Satyarthi |
-| **Roll number** | 2024107717 |
-| **Branch** | CSE-Core |
+| Live app | https://mealbridge-app.vercel.app |
+| Source | https://github.com/pushpam2404/mealbridge |
+| Course | Web Application Framework |
+| Student | Pushpam Raj Satyarthi |
+| Roll number | 2024107717 |
+| Branch | CSE-Core |
 
-**Try it without signing up:** open the app, go to *Sign in*, and use **Try as a kitchen** or **Try as an NGO**. Both demo accounts use the password `demo1234`.
+To try it without signing up, open the app, go to Sign in, and use "Try as a kitchen" or "Try as an NGO". Both demo accounts use the password `demo1234`.
 
 | Role | Email | Organisation |
 |---|---|---|
@@ -24,37 +26,23 @@
 
 ## The problem
 
-India wastes tens of millions of tonnes of food every year, and a large share of it is cooked food from restaurants, hostels, weddings and corporate canteens that was never served. At the same time, NGOs and night shelters struggle to source enough meals. The food usually exists **a few kilometres away**, but nobody knows it's there, and cooked food has a window of only a few hours.
+A lot of cooked food from restaurants, hostels, weddings and canteens is never served, while NGOs and night shelters struggle to source meals. The surplus is usually a few kilometres from someone who needs it, but cooked food only stays safe for a few hours, so nobody finds out in time.
 
-MealBridge closes that gap with a simple, time-aware marketplace:
+MealBridge is a small marketplace built around that time limit:
 
-1. **A kitchen posts its surplus**: what it is, how many people it feeds, the pickup window, and when it stops being safe to eat.
-2. **A nearby NGO claims it.** Claims are atomic, so two NGOs can never claim the same food. Contact details are shared only between the two parties.
-3. **They collect it and confirm.** The meals are added to the public impact report.
+1. A kitchen posts its surplus: what it is, how many people it feeds, the pickup window, and when it stops being safe to eat.
+2. A nearby NGO claims it. Claims are atomic, so two NGOs cannot claim the same food. Contact details are shared only between the two parties.
+3. They collect it and confirm. The meals are added to the public impact report.
 
-Listings automatically come off the board once their best-before time passes.
+Listings come off the board on their own once the best-before time passes.
 
 ## Features
 
-**For donors (kitchens)**
-- Post, edit, cancel and delete surplus food listings (full CRUD)
-- Quick time presets ("Ready now", "After dinner service", "Tomorrow morning")
-- Category, veg / non-veg / vegan marking (Indian FSSAI-style symbol), allergen tags
-- Dashboard tabs for *Waiting for a claim*, *Being collected* and *History*
-- See who is collecting, their phone and email, and a pickup code to verify them
-- Personal impact: meals donated, kg rescued, CO₂e avoided
+Donors (kitchens) can post, edit, cancel and delete listings, use time presets such as "Ready now" or "After dinner service", mark veg / non-veg / vegan with the FSSAI-style symbol, and tag allergens. The dashboard splits listings into waiting for a claim, being collected and history. Once someone claims a listing, the donor sees who is collecting it, their phone and email, and a pickup code to check at handover. There is also a personal impact tally (meals, kg, CO2e).
 
-**For receivers (NGOs and volunteers)**
-- Live board of open listings, soonest-expiring first, with countdown timers
-- Search, city filter, category and food-type filters, sorting, pagination (all reflected in the URL, so filtered views can be shared)
-- One-tap claim with confirmation, release a claim, confirm collection
-- Pickup code and donor contact details once claimed
+Receivers (NGOs and volunteers) see a live board of open listings, soonest-expiring first, with countdown timers. Search, city, category and food-type filters, sorting and pagination all live in the URL, so a filtered view can be shared. Claiming takes one tap plus a confirmation. A claim can be released, and a pickup confirmed once the food is collected.
 
-**For everyone**
-- Public impact report with weekly and per-category charts plus table views
-- Responsive from 360 px phones to wide desktops, with light and dark themes
-- Accessible: semantic HTML, labelled form controls, keyboard-friendly dialogs with focus trapping, skip link, visible focus rings, `prefers-reduced-motion` respected
-- Motion design with [Motion](https://motion.dev): tickets drop onto the pickup board, shared-layout filter chips and tab indicators, animated list changes, spring-based dialogs
+Everyone can open the public impact report, which has weekly and per-category charts, each with a table view. The layout works from 360 px phones to wide desktops, in light and dark themes. Dialogs trap focus, there is a skip link, focus rings are visible, form errors are announced, and `prefers-reduced-motion` is respected. Animation uses [Motion](https://motion.dev): tickets drop onto the pickup board, filter chips and tabs share a moving indicator, dialogs use springs.
 
 ## Tech stack
 
@@ -63,7 +51,8 @@ Listings automatically come off the board once their best-before time passes.
 | Frontend | **React 19**, React Router 8, Vite 8, **Tailwind CSS 4**, Motion (motion.dev), Recharts, lucide-react icons, Sonner toasts |
 | Backend | **Node.js** + **Express 5** (REST API), Zod validation, JWT auth (jsonwebtoken), bcryptjs, Helmet, CORS, express-rate-limit |
 | Database | **MongoDB Atlas** via **Mongoose 9** |
-| Testing | Vitest + Supertest + mongodb-memory-server (23 API tests) |
+| Testing | Vitest, Supertest, mongodb-memory-server |
+| CI | GitHub Actions: lint, tests, build on every push and pull request |
 | Hosting | **Vercel**: static React build plus Express running as a serverless function |
 
 ## Architecture
@@ -87,10 +76,11 @@ flowchart LR
 - One Vercel project serves both halves. `vercel.json` rewrites `/api/*` to the Express function and everything else to the SPA's `index.html`.
 - The Mongoose connection is cached on `globalThis`, so warm serverless invocations reuse it instead of reconnecting.
 - The function runs in Vercel's Mumbai region (`bom1`), next to the Atlas cluster in AWS `ap-south-1`.
-- Locally, `server/server.js` runs the same Express app on port 5050, and Vite proxies `/api` to it.
+- Locally, `server/server.js` runs the same Express app on port 5050, and Vite proxies `/api` to it. If 5050 is taken, set `PORT` and the proxy follows it.
 
 ```
 mealbridge/
+├── .github/workflows/ci.yml     # lint, test, build
 ├── api/index.js                 # Vercel entry: exports the Express app
 ├── server/
 │   ├── server.js                # Local entry: app.listen()
@@ -102,7 +92,7 @@ mealbridge/
 │   │   ├── middleware/          # JWT auth, Zod validation, error handler
 │   │   └── utils/               # impact maths, HttpError
 │   ├── scripts/seed.js          # Demo users and listings
-│   └── tests/                   # Vitest + Supertest API tests
+│   └── tests/                   # Vitest + Supertest API tests, unit tests, CSP guard
 ├── client/
 │   ├── index.html
 │   └── src/
@@ -110,7 +100,7 @@ mealbridge/
 │       ├── components/          # Ticket, Modal, Layout, FoodMark, StatusStamp, ui primitives
 │       ├── context/             # AuthContext (JWT session)
 │       ├── hooks/               # useAsync, useNow, useTheme, useTitle
-│       └── lib/                 # api client, formatting, constants
+│       └── lib/                 # api client, formatting (with tests), constants
 └── vercel.json
 ```
 
@@ -215,7 +205,8 @@ Other scripts:
 
 | Command | What it does |
 |---|---|
-| `npm test` | Runs the API test suite against an in-memory MongoDB |
+| `npm test` | Runs the API tests (against an in-memory MongoDB) and the client unit tests |
+| `npm run lint` | Lints the React app with oxlint |
 | `npm run build` | Builds the React app into `client/dist` |
 | `npm start` | Runs the API only |
 
@@ -224,10 +215,10 @@ Other scripts:
 | Variable | Required | Description |
 |---|---|---|
 | `MONGODB_URI` | yes | MongoDB connection string |
-| `JWT_SECRET` | yes | Secret for signing login tokens |
+| `JWT_SECRET` | yes | Secret for signing login tokens. Use a long random string, for example `openssl rand -base64 48` |
 | `DEMO_MODE` | no | `true` re-posts the demo kitchens' listings with fresh pickup times once they expire or are collected, so the public demo never shows an empty board (checked at most every 5 minutes) |
-| `CORS_ORIGIN` | no | Comma-separated allowed origins (defaults to any, since the frontend is same-origin) |
-| `PORT` | no | Local API port (default 5050) |
+| `CORS_ORIGIN` | no | Comma-separated allowed origins. Defaults to any origin, which is fine here because the frontend is same-origin and auth uses a bearer token, not cookies |
+| `PORT` | no | Local API port (default 5050). The Vite dev proxy reads the same variable |
 
 ## Deployment (Vercel + MongoDB Atlas, both free)
 
@@ -244,7 +235,35 @@ Every push to `main` redeploys automatically.
 npm test
 ```
 
-23 integration tests cover registration and login, validation errors, duplicate emails, ownership rules on update and delete, the claim → complete lifecycle, concurrent claims (only one wins), releasing claims, lazy expiry of stale listings, private contact details, impact statistics, and demo mode.
+There are 40 tests. The API tests run the real Express app against an in-memory MongoDB and cover registration and login, validation errors, duplicate emails, ownership rules, the claim, complete and release lifecycle, two simultaneous claims (only one wins), lazy expiry of stale listings, private contact details, partial updates that must not wipe other fields, forged and expired tokens, operator objects in login bodies, oversized bodies, impact statistics and demo mode. Smaller unit tests cover the impact maths and the client's date and freshness formatting. One test checks that the inline theme script in `client/index.html` still matches the hash allowed by the Content-Security-Policy in `vercel.json`.
+
+GitHub Actions runs lint, the tests and the production build on every push and pull request (`.github/workflows/ci.yml`).
+
+## Security notes
+
+- Request bodies and query strings go through Zod schemas before they reach Mongoose, so objects like `{"$ne": null}` are rejected rather than treated as queries. Search text is regex-escaped.
+- Passwords are hashed with bcrypt. Tokens are HS256 JWTs that expire after 7 days, and the algorithm is pinned when verifying.
+- The auth routes are rate limited (50 requests per 15 minutes per IP). The limiter is in memory, so on Vercel each warm function instance counts separately.
+- The API sends Helmet's headers. The static site gets a Content-Security-Policy and other headers from `vercel.json`.
+- Phone and email are only returned to the donor and the receiver who claimed that listing.
+
+## Limitations
+
+- Tokens live in `localStorage`, so an XSS bug would expose them. The CSP and React's escaping reduce that risk, but an httpOnly cookie would be safer.
+- There is no email verification or password reset, and nothing checks that a donor or NGO is who they say they are. Anyone can register as either.
+- Location is a free-text city, not coordinates, so there is no "near me" search.
+- Listings have no photos.
+- Impact numbers rest on donor estimates and fixed conversion factors.
+- Expired listings are flipped when someone reads the board, not by a scheduled job.
+- The rate limiter is per instance (see above) and there is no limit on other routes.
+
+## Roadmap
+
+- Geocode addresses and sort by distance.
+- Email or WhatsApp notification when a listing is claimed or about to expire.
+- Move the session to an httpOnly cookie with CSRF protection.
+- Photo upload for listings.
+- A shared rate-limit store for the serverless deployment.
 
 ## Screenshots
 
@@ -252,13 +271,17 @@ npm test
 |---|---|
 | ![Browse page](docs/screenshots/browse-desktop.png) | ![Claimed listing with pickup code](docs/screenshots/listing-claimed.png) |
 
-| Donor dashboard | Impact report |
+| Donor dashboard | Post a listing |
 |---|---|
-| ![Donor dashboard](docs/screenshots/dashboard-donor.png) | ![Impact report](docs/screenshots/impact.png) |
+| ![Donor dashboard](docs/screenshots/dashboard-donor.png) | ![Listing editor](docs/screenshots/editor.png) |
 
-| Mobile: home | Mobile: browse | Dark theme |
+| Impact report | Dark theme |
+|---|---|
+| ![Impact report](docs/screenshots/impact.png) | ![Dark theme](docs/screenshots/home-dark.png) |
+
+| Mobile: home | Mobile: browse | Mobile: dashboard |
 |---|---|---|
-| ![Mobile home](docs/screenshots/mobile-home.png) | ![Mobile browse](docs/screenshots/mobile-browse.png) | ![Dark theme](docs/screenshots/home-dark.png) |
+| ![Mobile home](docs/screenshots/mobile-home.png) | ![Mobile browse](docs/screenshots/mobile-browse.png) | ![Mobile dashboard](docs/screenshots/mobile-dashboard.png) |
 
 ## How the impact numbers work
 
