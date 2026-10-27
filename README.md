@@ -11,12 +11,13 @@ MealBridge connects restaurants, hostel messes, caterers and bakeries that have 
 | Course | Web Application Framework |
 | Student | Pushpam Raj Satyarthi |
 
-To try it without signing up, open the app, go to Sign in, and use "Try as a kitchen" or "Try as an NGO". Both demo accounts use the password `demo1234`.
+To try it without signing up, open the app, go to Sign in, and use "Try as a kitchen" or "Try as an NGO". All demo accounts use the password `demo1234`. They come with sample listings, pickups and impact figures, so every screen has something to show.
 
 | Role | Email | Organisation |
 |---|---|---|
 | Donor (kitchen) | `donor@mealbridge.app` | Spice Route Kitchen, Pune |
 | Receiver (NGO) | `ngo@mealbridge.app` | Roti Bank Foundation, Pune |
+| Receiver (shelter) | `shelter@mealbridge.app` | Hope Night Shelter |
 
 ![MealBridge home page with the live pickup board](docs/screenshots/home-desktop.png)
 
