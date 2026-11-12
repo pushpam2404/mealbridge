@@ -159,7 +159,7 @@ export default function AuthPage({ mode }) {
                     />
                     <r.icon className="mt-0.5 size-6 shrink-0" aria-hidden />
                     <span>
-                      <span className="block font-bold">{r.title}</span>
+                      <span className="block font-semibold">{r.title}</span>
                       <span className={clsx('block text-sm', values.role === r.value ? 'text-on-lime/80' : 'text-ink-soft')}>{r.body}</span>
                     </span>
                   </label>
@@ -209,7 +209,7 @@ export default function AuthPage({ mode }) {
       </div>
 
       <aside className="ticket self-start p-6" aria-labelledby="demo-heading">
-        <h2 id="demo-heading" className="text-lg font-bold">
+        <h2 id="demo-heading" className="text-lg font-semibold">
           Just looking around?
         </h2>
         <p className="mt-1 text-sm text-ink-soft">Use a demo account with sample data. Both use the password demo1234.</p>

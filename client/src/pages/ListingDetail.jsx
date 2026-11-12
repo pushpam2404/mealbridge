@@ -165,7 +165,7 @@ function ActionPanel({ listing, onChange }) {
   return (
     <aside className="ticket p-6 lg:sticky lg:top-24" aria-label="Pickup">
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-lg font-bold">Pickup</h2>
+        <h2 className="text-lg font-semibold">Pickup</h2>
         <AnimatePresence mode="popLayout" initial={false}>
           <motion.span
             key={status}
@@ -276,11 +276,11 @@ export default function ListingDetail() {
           <dl className="grid gap-6 p-6 sm:grid-cols-2 sm:p-8">
             <div>
               <dt className="text-sm text-ink-soft">Pickup window</dt>
-              <dd className="num mt-1 text-xl font-bold">{fmtWindow(listing.pickupStart, listing.pickupEnd, new Date(now))}</dd>
+              <dd className="num mt-1 text-xl font-semibold">{fmtWindow(listing.pickupStart, listing.pickupEnd, new Date(now))}</dd>
             </div>
             <div>
               <dt className="text-sm text-ink-soft">Best before</dt>
-              <dd className="num mt-1 text-xl font-bold">
+              <dd className="num mt-1 text-xl font-semibold">
                 {fmtDay(listing.expiresAt, new Date(now))}, {fmtTime(listing.expiresAt)}
               </dd>
               {live && (
@@ -292,13 +292,13 @@ export default function ListingDetail() {
             </div>
             <div>
               <dt className="text-sm text-ink-soft">Quantity</dt>
-              <dd className="num mt-1 text-xl font-bold">
+              <dd className="num mt-1 text-xl font-semibold">
                 {fmtNumber(listing.quantity)} {UNITS[listing.unit]}
               </dd>
             </div>
             <div>
               <dt className="text-sm text-ink-soft">Feeds about</dt>
-              <dd className="num mt-1 text-xl font-bold">{fmtNumber(listing.estServings)} people</dd>
+              <dd className="num mt-1 text-xl font-semibold">{fmtNumber(listing.estServings)} people</dd>
             </div>
             <div className="sm:col-span-2">
               <dt className="text-sm text-ink-soft">Pickup address</dt>

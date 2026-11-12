@@ -42,7 +42,7 @@ function ChartTooltip({ active, payload, label, labelFormatter }) {
 function ChartCard({ title, caption, children, table }) {
   return (
     <figure className="ticket p-5 sm:p-7">
-      <h2 className="text-xl font-bold">{title}</h2>
+      <h2 className="text-xl font-semibold">{title}</h2>
       <p className="mt-1 text-sm text-ink-soft">{caption}</p>
       <div className="mt-6">{children}</div>
       <details className="mt-4 text-sm">
@@ -189,7 +189,7 @@ export default function Impact() {
       </div>
 
       <section className="mt-12 max-w-2xl" aria-labelledby="method">
-        <h2 id="method" className="text-xl font-bold">
+        <h2 id="method" className="text-xl font-semibold">
           How these numbers are worked out
         </h2>
         <p className="mt-2 text-ink-soft">

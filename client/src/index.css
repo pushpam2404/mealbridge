@@ -161,7 +161,7 @@
 
   .display {
     font-variation-settings: 'wdth' 78;
-    font-weight: 700;
+    font-weight: 600;
   }
 
   /* Pickup ticket: a card with a perforated tear line and side notches. */
@@ -222,23 +222,12 @@
   }
 
   .skeleton {
-    background: linear-gradient(90deg, var(--surface-2) 25%, color-mix(in oklab, var(--surface-2) 60%, var(--surface)) 50%, var(--surface-2) 75%);
-    background-size: 200% 100%;
-    animation: shimmer 1.4s linear infinite;
+    background: var(--surface-2);
     border-radius: 6px;
   }
 }
 
-@keyframes shimmer {
-  to {
-    background-position: -200% 0;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .skeleton {
-    animation: none;
-  }
   *,
   *::before,
   *::after {

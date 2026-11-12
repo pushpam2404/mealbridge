@@ -68,7 +68,7 @@ export function Modal({ open, onClose, title, children, footer }) {
             transition={{ type: 'spring', bounce: 0.15, visualDuration: 0.3 }}
           >
             <div className="mb-3 flex items-start justify-between gap-4">
-              <h2 id={titleId} className="text-xl font-bold">
+              <h2 id={titleId} className="text-xl font-semibold">
                 {title}
               </h2>
               <button

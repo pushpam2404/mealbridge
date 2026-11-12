@@ -31,7 +31,7 @@ export const Ticket = forwardRef(function Ticket({ listing, now, className, head
           <StatusStamp status={listing.status} />
         </div>
 
-        <H className="text-xl leading-snug font-bold">
+        <H className="text-xl leading-snug font-semibold">
           <Link
             to={`/listings/${listing._id}`}
             className="after:absolute after:inset-0 after:rounded-[10px] after:content-[''] group-hover:text-leaf focus-visible:outline-none group-has-[a:focus-visible]:after:outline-3 group-has-[a:focus-visible]:after:outline-leaf"
@@ -68,7 +68,7 @@ export const Ticket = forwardRef(function Ticket({ listing, now, className, head
       <div className="grid grid-cols-[1fr_auto] gap-x-4 gap-y-2 p-5 pt-4">
         <div>
           <p className="text-xs font-medium text-ink-soft">Pickup {fmtDayInline(listing.pickupStart, new Date(now))}</p>
-          <p className="num text-lg font-bold">
+          <p className="num text-lg font-semibold">
             {fmtTime(listing.pickupStart)} – {fmtTime(listing.pickupEnd)}
           </p>
         </div>
@@ -76,7 +76,7 @@ export const Ticket = forwardRef(function Ticket({ listing, now, className, head
           <p className="text-xs font-medium text-ink-soft">
             {fmtNumber(listing.quantity)} {UNITS[listing.unit]}
           </p>
-          <p className="num text-lg font-bold">Feeds {fmtNumber(listing.estServings)}</p>
+          <p className="num text-lg font-semibold">Feeds {fmtNumber(listing.estServings)}</p>
         </div>
         {live && (
           <p className={clsx('col-span-2 flex items-center gap-1.5 text-sm font-semibold', urgencyTone[fresh.urgency])}>

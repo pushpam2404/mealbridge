@@ -100,7 +100,7 @@ function Section({ title, hint, children }) {
   return (
     <fieldset className="grid gap-x-8 gap-y-5 border-t border-line py-8 first:border-t-0 first:pt-0 md:grid-cols-[14rem_1fr]">
       <div>
-        <legend className="text-lg font-bold">{title}</legend>
+        <legend className="text-lg font-semibold">{title}</legend>
         {hint && <p className="mt-1 text-sm text-ink-soft">{hint}</p>}
       </div>
       <div className="grid gap-5">{children}</div>

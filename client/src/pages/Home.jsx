@@ -65,7 +65,7 @@ function PickupBoard() {
               className="relative"
               initial={{ y: -48, opacity: 0, rotate: 0 }}
               animate={{ y: 0, opacity: 1, rotate: hang[i].rotate, x: wide ? hang[i].x : hang[i].x / 3 }}
-              transition={{ type: 'spring', bounce: 0.35, visualDuration: 0.55, delay: 0.15 + i * 0.14 }}
+              transition={{ type: 'spring', bounce: 0.15, visualDuration: 0.55, delay: 0.15 + i * 0.14 }}
               style={{ transformOrigin: '50% 0%' }}
             >
               <span
@@ -113,7 +113,7 @@ function HowItWorks() {
                   <span className="hidden h-0 flex-1 border-t-2 border-dashed border-line sm:block" aria-hidden />
                 )}
               </div>
-              <h3 className="text-xl font-bold">{step.title}</h3>
+              <h3 className="text-xl font-semibold">{step.title}</h3>
               <p className="mt-2 max-w-xs text-ink-soft">{step.body}</p>
             </li>
           ))}
@@ -198,7 +198,7 @@ function Roles() {
           {roles.map((r) => (
             <div key={r.title} className="flex flex-col rounded-2xl border border-line p-7 sm:p-9">
               <r.icon className="size-8 text-leaf" strokeWidth={1.75} aria-hidden />
-              <h3 className="mt-5 text-2xl font-bold">{r.title}</h3>
+              <h3 className="mt-5 text-2xl font-semibold">{r.title}</h3>
               <ul className="mt-5 flex-1 space-y-3">
                 {r.points.map((p) => (
                   <li key={p} className="flex gap-3 text-ink-soft">
@@ -229,7 +229,7 @@ export default function Home() {
         <Container className="grid items-center gap-12 lg:grid-cols-[1fr_1.05fr] lg:gap-16">
           <div>
             <h1 className="display text-[clamp(2.9rem,7.5vw,5.4rem)] leading-[0.95]">
-              Tonight’s leftovers can be someone’s dinner.
+              Tonight’s leftovers can be someone’s dinner
             </h1>
             <p className="mt-6 max-w-lg text-lg text-ink-soft sm:text-xl">
               Restaurants, hostels and caterers post surplus food on MealBridge. NGOs and volunteers nearby claim it and

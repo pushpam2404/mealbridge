@@ -28,11 +28,6 @@ const TABS = {
   ],
 };
 
-function greeting() {
-  const h = new Date().getHours();
-  return h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
-}
-
 function ImpactLedger({ role }) {
   const { data, loading } = useAsync(() => api.myStats(), []);
   const items = data
@@ -100,7 +95,7 @@ function Row({ listing, role, now, onAction }) {
       </div>
       <div className="min-w-0 flex-1 space-y-1.5">
         <div className="flex flex-wrap items-center gap-2">
-          <Link to={`/listings/${listing._id}`} className="text-lg font-bold hover:text-leaf">
+          <Link to={`/listings/${listing._id}`} className="text-lg font-semibold hover:text-leaf">
             {listing.title}
           </Link>
           <StatusStamp status={status} />
@@ -118,7 +113,7 @@ function Row({ listing, role, now, onAction }) {
         </p>
         {status === 'claimed' && (
           <div className="flex flex-wrap items-center gap-3 pt-1">
-            <span className="num rounded-md bg-lime px-2 py-0.5 text-sm font-bold tracking-wider text-on-lime">
+            <span className="num rounded-md bg-surface-2 px-2 py-0.5 font-mono text-sm font-medium text-ink ring-1 ring-line">
               {pickupCode(listing._id)}
             </span>
             <ContactLine person={role === 'donor' ? listing.claimedBy : listing.donor} />
@@ -213,11 +208,9 @@ export default function Dashboard() {
     <Container className="py-10 sm:py-14">
       <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="display text-4xl sm:text-5xl">
-            {greeting()}, {user.name.split(' ')[0]}
-          </h1>
+          <h1 className="display text-4xl sm:text-5xl">{user.organization || user.name}</h1>
           <p className="mt-2 text-ink-soft">
-            {user.organization ? `${user.organization}${user.city ? `, ${user.city}` : ''}` : 'Your MealBridge account'}
+            {[isDonor ? 'Your listings' : 'Your pickups', user.city].filter(Boolean).join(' · ')}
           </p>
         </div>
         {isDonor ? (
@@ -250,7 +243,7 @@ export default function Dashboard() {
             )}
           >
             {t.label}
-            <span className="num rounded-full bg-surface-2 px-2 text-xs font-bold text-ink-soft">{groups[t.key]?.length ?? 0}</span>
+            <span className="num rounded-full bg-surface-2 px-2 text-xs font-medium text-ink-soft">{groups[t.key]?.length ?? 0}</span>
             {tab === t.key && (
               <motion.span layoutId="dash-tab" className="absolute inset-x-0 -bottom-px h-0.5 bg-leaf" transition={{ type: 'spring', bounce: 0.2, visualDuration: 0.3 }} />
             )}
